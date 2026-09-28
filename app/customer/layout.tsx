@@ -52,19 +52,19 @@ export default function CustomerLayout({
       title: "Browse",
       url: "/customer",
       icon: Compass,
-      isActive: pathname === "/customer",
+      isActive: pathname === "/customer" || pathname.startsWith("/customer/providers"),
     },
     {
       title: "My Bookings",
-      url: "/customer#bookings",
+      url: "/customer/bookings",
       icon: CalendarCheck,
-      isActive: false,
+      isActive: pathname.startsWith("/customer/bookings") || pathname.startsWith("/customer/book"),
     },
     {
       title: "Profile",
-      url: "/customer#profile",
+      url: "/customer/profile",
       icon: User,
-      isActive: false,
+      isActive: pathname === "/customer/profile",
     },
   ]
 
@@ -168,7 +168,15 @@ export default function CustomerLayout({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbPage className="text-xs font-semibold">
-                  Browse
+                  {pathname.startsWith("/customer/bookings")
+                    ? "My Bookings"
+                    : pathname.startsWith("/customer/book")
+                    ? "Book Service"
+                    : pathname.startsWith("/customer/providers")
+                    ? "Providers"
+                    : pathname.startsWith("/customer/profile")
+                    ? "Profile"
+                    : "Browse"}
                 </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>

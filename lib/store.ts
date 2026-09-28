@@ -31,6 +31,7 @@ export interface AppState {
   updateBookingStatus: (bookingId: string, status: BookingStatus) => void
   createBooking: (booking: Omit<Booking, "id" | "createdAt">) => Booking
   addReview: (review: Omit<Review, "id" | "createdAt">) => void
+  updateCurrentPersona: (updates: Partial<Persona>) => void
 
   // Reset to initial mock state
   resetStore: () => void
@@ -81,7 +82,22 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
     set((state) => ({
       reviews: [newReview, ...state.reviews],
+      bookings: state.bookings.map((b) =>
+        b.id === reviewData.bookingId ? { ...b, awaitingReview: false } : b
+      ),
     }))
+  },
+
+  updateCurrentPersona: (updates) => {
+    set((state) => {
+      const updated = { ...state.currentPersona, ...updates }
+      return {
+        currentPersona: updated,
+        personas: state.personas.map((p) =>
+          p.id === updated.id ? updated : p
+        ),
+      }
+    })
   },
 
   resetStore: () =>

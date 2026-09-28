@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import { categories } from "@/lib/mock-data/categories"
 import {
   Card,
@@ -97,7 +98,9 @@ export default function CustomerBrowsePage() {
                   ₱{cat.priceRange.min.toLocaleString()} - ₱{cat.priceRange.max.toLocaleString()}
                 </Badge>
               </div>
-              <CardTitle className="text-lg font-bold">{cat.name}</CardTitle>
+              <Link href={`/customer/providers/${cat.slug}`} className="hover:underline">
+                <CardTitle className="text-lg font-bold">{cat.name}</CardTitle>
+              </Link>
               <CardDescription className="text-xs leading-relaxed line-clamp-2">
                 {cat.description}
               </CardDescription>
@@ -129,9 +132,12 @@ export default function CustomerBrowsePage() {
                   size="sm"
                   variant="ghost"
                   className="h-8 px-2.5 text-xs font-medium hover:text-foreground group"
+                  asChild
                 >
-                  Explore Pros
-                  <ArrowRight className="h-3.5 w-3.5 ml-1 transition-transform group-hover:translate-x-0.5" />
+                  <Link href={`/customer/providers/${cat.slug}`}>
+                    Explore Pros
+                    <ArrowRight className="h-3.5 w-3.5 ml-1 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
                 </Button>
               </div>
             </CardContent>
