@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Empty,
   EmptyHeader,
@@ -39,6 +40,13 @@ import {
 export default function CustomerBookingsPage() {
   const currentPersona = useAppStore((state) => state.currentPersona)
   const bookings = useAppStore((state) => state.bookings)
+
+  const [isLoading, setIsLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 350)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Filter bookings for the active customer persona
   const customerBookings = bookings.filter(
@@ -116,7 +124,35 @@ export default function CustomerBookingsPage() {
         </Button>
       </div>
 
-      {customerBookings.length > 0 ? (
+      {isLoading ? (
+        <div className="space-y-4">
+          <div className="flex gap-2">
+            <Skeleton className="h-9 w-24 rounded-lg" />
+            <Skeleton className="h-9 w-24 rounded-lg" />
+            <Skeleton className="h-9 w-24 rounded-lg" />
+          </div>
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="border-border bg-card p-6 space-y-4">
+              <div className="flex justify-between items-start">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-6 w-64" />
+                  <Skeleton className="h-4 w-40" />
+                </div>
+                <div className="space-y-1 text-right">
+                  <Skeleton className="h-3 w-16 ml-auto" />
+                  <Skeleton className="h-6 w-20 ml-auto" />
+                </div>
+              </div>
+              <Skeleton className="h-10 w-full rounded-md" />
+              <div className="flex justify-between items-center pt-1">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-8 w-24 rounded-md" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : customerBookings.length > 0 ? (
         <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full sm:w-auto grid-cols-3">
             <TabsTrigger value="all" className="text-xs">

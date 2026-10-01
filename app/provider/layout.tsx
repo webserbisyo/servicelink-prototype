@@ -62,33 +62,33 @@ export default function ProviderLayout({
     },
     {
       title: "Profile",
-      url: "/provider#profile",
+      url: "/provider/profile",
       icon: User,
-      isActive: false,
+      isActive: pathname === "/provider/profile",
     },
     {
       title: "Requests",
-      url: "/provider#requests",
+      url: "/provider/requests",
       icon: Inbox,
-      isActive: false,
+      isActive: pathname === "/provider/requests",
     },
     {
       title: "Jobs",
-      url: "/provider#jobs",
+      url: "/provider/jobs",
       icon: Briefcase,
-      isActive: false,
+      isActive: pathname.startsWith("/provider/jobs"),
     },
     {
       title: "Reviews",
-      url: "/provider#reviews",
+      url: "/provider/reviews",
       icon: Star,
-      isActive: false,
+      isActive: pathname === "/provider/reviews",
     },
     {
       title: "Earnings",
-      url: "/provider#earnings",
+      url: "/provider/earnings",
       icon: Coins,
-      isActive: false,
+      isActive: pathname === "/provider/earnings",
     },
   ]
 
@@ -132,16 +132,21 @@ export default function ProviderLayout({
       .slice(0, 2)
       .toUpperCase()
 
+  const bookings = useAppStore((state) => state.bookings)
+  const isJobDetail = pathname.startsWith("/provider/jobs/")
+  const currentJobId = isJobDetail ? pathname.replace("/provider/jobs/", "").split("/")[0] : null
+  const currentJob = currentJobId ? bookings.find((b) => b.id === currentJobId) : null
+
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon" className="border-r border-border">
+      <Sidebar collapsible="icon">
         {/* Sidebar Header */}
-        <SidebarHeader className="border-b border-border p-4">
-          <div className="flex items-center gap-3">
+        <SidebarHeader className="border-b border-border p-4 group-data-[collapsible=icon]:p-2">
+          <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-foreground text-background">
               <Wrench className="h-5 w-5" />
             </div>
-            <div className="flex flex-col min-w-0">
+            <div className="flex flex-col min-w-0 group-data-[collapsible=icon]:hidden">
               <span className="font-bold text-sm leading-tight truncate">ServiceLink</span>
               <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
                 Provider Portal
@@ -179,13 +184,13 @@ export default function ProviderLayout({
         </SidebarContent>
 
         {/* Sidebar Footer with Current Persona */}
-        <SidebarFooter className="border-t border-border p-3">
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/40">
+        <SidebarFooter className="border-t border-border p-3 group-data-[collapsible=icon]:p-2">
+          <div className="flex items-center gap-3 p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center rounded-lg bg-muted/40 group-data-[collapsible=icon]:bg-transparent">
             <Avatar className="h-8 w-8 border border-border shrink-0">
               <AvatarImage src={currentPersona.avatar} alt={currentPersona.name} />
               <AvatarFallback className="text-xs">{getInitials(currentPersona.name)}</AvatarFallback>
             </Avatar>
-            <div className="flex flex-col min-w-0 flex-1">
+            <div className="flex flex-col min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-xs truncate leading-tight">
                   {currentPersona.name}
@@ -208,23 +213,37 @@ export default function ProviderLayout({
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/" className="text-xs">
-                  ServiceLink
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/provider" className="text-xs">
-                  Provider
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="text-xs font-semibold">
-                  Dashboard
-                </BreadcrumbPage>
-              </BreadcrumbItem>
+              {isJobDetail ? (
+                <>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="/provider/jobs" className="text-xs">
+                      Jobs
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage className="text-xs font-semibold">
+                      {currentJob?.serviceTitle || "Job Details"}
+                    </BreadcrumbPage>
+                  </BreadcrumbItem>
+                </>
+              ) : (
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="text-xs font-semibold">
+                    {pathname === "/provider/profile"
+                      ? "Profile"
+                      : pathname === "/provider/requests"
+                      ? "Job Requests"
+                      : pathname === "/provider/jobs"
+                      ? "Jobs"
+                      : pathname === "/provider/reviews"
+                      ? "Reviews"
+                      : pathname === "/provider/earnings"
+                      ? "Earnings"
+                      : "Dashboard"}
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+              )}
             </BreadcrumbList>
           </Breadcrumb>
 

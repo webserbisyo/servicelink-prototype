@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Empty,
   EmptyHeader,
@@ -40,6 +41,13 @@ export default function CategoryProvidersPage() {
 
   const categories = useAppStore((state) => state.categories)
   const providers = useAppStore((state) => state.providers)
+
+  const [isLoading, setIsLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 350)
+    return () => clearTimeout(timer)
+  }, [])
 
   const category = categories.find(
     (c) => c.slug.toLowerCase() === categorySlug.toLowerCase() || c.id.toLowerCase() === categorySlug.toLowerCase()
@@ -100,7 +108,30 @@ export default function CategoryProvidersPage() {
       </div>
 
       {/* Provider List */}
-      {matchedProviders.length > 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} className="border-border bg-card p-6 space-y-4">
+              <div className="flex items-start gap-4">
+                <Skeleton className="h-14 w-14 rounded-full shrink-0" />
+                <div className="space-y-2 flex-1">
+                  <div className="flex items-center justify-between">
+                    <Skeleton className="h-5 w-36" />
+                    <Skeleton className="h-5 w-20 rounded-full" />
+                  </div>
+                  <Skeleton className="h-4 w-48" />
+                  <Skeleton className="h-3 w-28" />
+                </div>
+              </div>
+              <Skeleton className="h-10 w-full rounded-md" />
+              <div className="flex justify-between items-center pt-2">
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-8 w-24 rounded-md" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : matchedProviders.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {matchedProviders.map((provider) => {
             const isApproved = provider.verificationStatus === "approved"
